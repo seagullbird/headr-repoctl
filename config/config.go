@@ -1,5 +1,5 @@
 package config
 
 var (
-	GRPCAddr = "unset"
+	PORT = "unset"
 )

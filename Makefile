@@ -3,6 +3,7 @@ GOOS?=linux
 APP?=repoctl
 PROJECT?=github.com/seagullbird/headr/services/repoctl
 COMMIT?=$(shell git rev-parse --short HEAD)
+PORT?=:8687
 
 
 clean:
@@ -10,7 +11,7 @@ clean:
 
 build: clean
 	GOARCH=${GOARCH} GOOS=${GOOS} go build \
-	-ldflags "-s -w -X ${PROJECT}/config.GRPCAddr=${grpcaddr}" \
+	-ldflags "-s -w -X ${PROJECT}/config.PORT=${PORT}" \
 	-o ${APP}
 
 container: build

@@ -29,12 +29,12 @@ func main() {
 		grpcServer = transport.NewGRPCServer(endpoints, logger)
 	)
 
-	grpcListener, err := net.Listen("tcp", config.GRPCAddr)
+	grpcListener, err := net.Listen("tcp", config.PORT)
 	if err != nil {
 		logger.Log("transport", "gRPC", "during", "Listen", "err", err)
 		os.Exit(1)
 	}
-	logger.Log("transport", "gRPC", "addr", config.GRPCAddr)
+	logger.Log("transport", "gRPC", "addr", config.PORT)
 	baseServer := grpc.NewServer()
 	pb.RegisterRepoctlServer(baseServer, grpcServer)
 
