@@ -4,6 +4,7 @@ import (
 	"github.com/streadway/amqp"
 	"log"
 	"encoding/json"
+	"github.com/seagullbird/headr/services/repoctl/config"
 )
 
 type Dispatcher interface {
@@ -41,7 +42,7 @@ func (d *AMQPDispatcher) DispatchMessage(message interface{}) (err error) {
 func NewDispatcher(queueName string) Dispatcher {
 	uri := amqp.URI{
 		Scheme:   "amqp",
-		Host:     "historical-mandrill-rabbitmq.default.svc.cluster.local",
+		Host:     config.MQSERVERNAME,
 		Port:     5672,
 		Username: "user",
 		Password: "kQS5MZHEFC",
