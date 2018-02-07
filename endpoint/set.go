@@ -3,7 +3,7 @@ package endpoint
 import (
 	"context"
 	"github.com/go-kit/kit/endpoint"
-	"github.com/seagullbird/headr/services/repoctl/service"
+	"github.com/seagullbird/headr-repoctl/service"
 	"github.com/go-kit/kit/log"
 )
 

@@ -2,9 +2,9 @@ package transport
 
 import (
 	grpctransport "github.com/go-kit/kit/transport/grpc"
-	"github.com/seagullbird/headr/services/repoctl/endpoint"
+	"github.com/seagullbird/headr-repoctl/endpoint"
 	"github.com/go-kit/kit/log"
-	"github.com/seagullbird/headr/services/repoctl/pb"
+	"github.com/seagullbird/headr-repoctl/pb"
 	"context"
 )
 

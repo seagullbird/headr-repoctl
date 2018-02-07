@@ -3,14 +3,14 @@ package main
 import (
 	"os"
 	"github.com/go-kit/kit/log"
-	"github.com/seagullbird/headr/services/repoctl/service"
-	"github.com/seagullbird/headr/services/repoctl/mq_helper"
-	"github.com/seagullbird/headr/services/repoctl/endpoint"
-	"github.com/seagullbird/headr/services/repoctl/transport"
+	"github.com/seagullbird/headr-repoctl/service"
+	"github.com/seagullbird/headr-repoctl/mq_helper"
+	"github.com/seagullbird/headr-repoctl/endpoint"
+	"github.com/seagullbird/headr-repoctl/transport"
 	"net"
 	"google.golang.org/grpc"
-	"github.com/seagullbird/headr/services/repoctl/pb"
-	"github.com/seagullbird/headr/services/repoctl/config"
+	"github.com/seagullbird/headr-repoctl/pb"
+	"github.com/seagullbird/headr-repoctl/config"
 )
 
 func main() {

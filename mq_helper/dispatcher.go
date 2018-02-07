@@ -4,7 +4,7 @@ import (
 	"github.com/streadway/amqp"
 	"log"
 	"encoding/json"
-	"github.com/seagullbird/headr/services/repoctl/config"
+	"github.com/seagullbird/headr-repoctl/config"
 )
 
 type Dispatcher interface {
