@@ -2,9 +2,9 @@ package mq_helper
 
 import (
 	"github.com/streadway/amqp"
-	"log"
 	"encoding/json"
 	"github.com/seagullbird/headr-repoctl/config"
+	"github.com/go-kit/kit/log"
 )
 
 type Dispatcher interface {
@@ -12,13 +12,14 @@ type Dispatcher interface {
 }
 
 type AMQPDispatcher struct {
-	channel       *amqp.Channel
-	queueName     string
-	mandatorySend bool
+	channel       	*amqp.Channel
+	queueName     	string
+	mandatorySend 	bool
+	logger 			log.Logger
 }
 
 func (d *AMQPDispatcher) DispatchMessage(message interface{}) (err error) {
-	log.Printf("Dispatching message to queue %s\n", d.queueName)
+	d.logger.Log("Dispatching message to queue", d.queueName)
 	body, err := json.Marshal(message)
 	if err == nil {
 		err = d.channel.Publish(
@@ -31,15 +32,15 @@ func (d *AMQPDispatcher) DispatchMessage(message interface{}) (err error) {
 				Body:        []byte(body),
 			})
 		if err != nil {
-			log.Printf("Failed to dispatch message: %s\n", err)
+			d.logger.Log("Failed to dispatch message, err", err)
 		}
 	} else {
-		log.Printf("Failed to marshal message %v (%s)\n", message, err)
+		d.logger.Log("Failed to marshal err", err, "message", message)
 	}
 	return
 }
 
-func NewDispatcher(queueName string) Dispatcher {
+func NewDispatcher(queueName string, logger log.Logger) Dispatcher {
 	uri := amqp.URI{
 		Scheme:   "amqp",
 		Host:     config.MQSERVERNAME,
@@ -49,10 +50,10 @@ func NewDispatcher(queueName string) Dispatcher {
 		Vhost:    "/",
 	}
 	conn, err := amqp.Dial(uri.String())
-	FailOnError(err, "Failed to connect to RabbitMQ")
+	logger.Log("Failed to connect to RabbitMQ", err)
 
 	ch, err := conn.Channel()
-	FailOnError(err, "Failed to open a channel")
+	logger.Log( "Failed to open a channel", err)
 
 	q, err := ch.QueueDeclare(
 		queueName, 			// name
@@ -62,10 +63,11 @@ func NewDispatcher(queueName string) Dispatcher {
 		false,		// no-wait
 		nil,			// arguments
 	)
-	FailOnError(err, "Failed to declare a queue")
+	logger.Log( "Failed to declare a queue", err)
 	return &AMQPDispatcher{
 		channel: ch,
 		queueName: q.Name,
 		mandatorySend: false,
+		logger: logger,
 	}
 }

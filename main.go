@@ -21,7 +21,7 @@ func main() {
 		logger = log.With(logger, "caller", log.DefaultCaller)
 	}
 
-	var dispatcher = mq_helper.NewDispatcher("new_site")
+	var dispatcher = mq_helper.NewDispatcher("new_site", logger)
 
 	var (
 		service = service.New(dispatcher, logger)
