@@ -53,6 +53,7 @@ func (s basicService) DeleteSite(ctx context.Context, email, sitename string) er
 		return MakeErrUnexpected(err)
 	}
 	cmd := exec.Command("rm", "-rf", sitepath)
+	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
 		return err
 	}
