@@ -29,7 +29,7 @@ func (mw loggingMiddleware) NewSite(ctx context.Context, email, sitename string)
 }
 
 func (mw loggingMiddleware) DeleteSite(ctx context.Context, email, sitename string) (err error) {
-	err = mw.next.NewSite(ctx, email, sitename)
+	err = mw.next.DeleteSite(ctx, email, sitename)
 	mw.logger.Log("method", "DeleteSite", "email", email, "sitename", sitename, "err", err)
 	return
 }
