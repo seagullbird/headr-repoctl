@@ -39,6 +39,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/seagullbird/headr-common"
+  packages = ["config","mq_helper"]
+  revision = "cf95dc840a7a33e1a8552c931e9c30eba4ef074e"
+
+[[projects]]
+  branch = "master"
   name = "github.com/streadway/amqp"
   packages = ["."]
   revision = "fc7fda2371f5327ad39211e09482845b8734cc72"
@@ -70,6 +76,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0af15bbef0981b2e01f14fa0e40e6d8e511b77b14cf3013c36a2f52e4e285b6f"
+  inputs-digest = "c27ca515b424c5c60fa8086a8a006122bea62219715bfe5615927895a92ea523"
   solver-name = "gps-cdcl"
   solver-version = 1

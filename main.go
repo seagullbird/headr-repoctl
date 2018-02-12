@@ -4,7 +4,7 @@ import (
 	"os"
 	"github.com/go-kit/kit/log"
 	"github.com/seagullbird/headr-repoctl/service"
-	"github.com/seagullbird/headr-repoctl/mq_helper"
+	"github.com/seagullbird/headr-common/mq_helper"
 	"github.com/seagullbird/headr-repoctl/endpoint"
 	"github.com/seagullbird/headr-repoctl/transport"
 	"net"
@@ -21,7 +21,7 @@ func main() {
 		logger = log.With(logger, "caller", log.DefaultCaller)
 	}
 
-	var dispatcher = mq_helper.NewDispatcher("new_site", logger)
+	var dispatcher = mq_helper.NewDispatcher("new_site")
 
 	var (
 		service = service.New(dispatcher, logger)

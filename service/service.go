@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"github.com/seagullbird/headr-repoctl/mq_helper"
+	"github.com/seagullbird/headr-common/mq_helper"
 	"time"
 	"github.com/go-kit/kit/log"
 	"os/exec"

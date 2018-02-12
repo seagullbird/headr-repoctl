@@ -2,9 +2,9 @@ package mq_helper
 
 import (
 	"github.com/streadway/amqp"
+	"log"
 	"encoding/json"
-	"github.com/seagullbird/headr-repoctl/config"
-	"github.com/go-kit/kit/log"
+	"github.com/seagullbird/headr-common/config"
 )
 
 type Dispatcher interface {
@@ -15,11 +15,10 @@ type AMQPDispatcher struct {
 	channel       	*amqp.Channel
 	queueName     	string
 	mandatorySend 	bool
-	logger 			log.Logger
 }
 
 func (d *AMQPDispatcher) DispatchMessage(message interface{}) (err error) {
-	d.logger.Log("Dispatching message to queue", d.queueName)
+	log.Println("Dispatching message to queue", d.queueName)
 	body, err := json.Marshal(message)
 	if err == nil {
 		err = d.channel.Publish(
@@ -32,15 +31,15 @@ func (d *AMQPDispatcher) DispatchMessage(message interface{}) (err error) {
 				Body:        []byte(body),
 			})
 		if err != nil {
-			d.logger.Log("Failed to dispatch message, err", err)
+			log.Println("Failed to dispatch message, err", err)
 		}
 	} else {
-		d.logger.Log("Failed to marshal err", err, "message", message)
+		log.Println("Failed to marshal:", err, "message", message)
 	}
 	return
 }
 
-func NewDispatcher(queueName string, logger log.Logger) Dispatcher {
+func NewDispatcher(queueName string) Dispatcher {
 	uri := amqp.URI{
 		Scheme:   "amqp",
 		Host:     config.MQSERVERNAME,
@@ -50,10 +49,14 @@ func NewDispatcher(queueName string, logger log.Logger) Dispatcher {
 		Vhost:    "/",
 	}
 	conn, err := amqp.Dial(uri.String())
-	logger.Log("Failed to connect to RabbitMQ", err)
+	if err != nil {
+		log.Println("Failed to connect to RabbitMQ", err)
+	}
 
 	ch, err := conn.Channel()
-	logger.Log( "Failed to open a channel", err)
+	if err != nil {
+		log.Println( "Failed to open a channel", err)
+	}
 
 	q, err := ch.QueueDeclare(
 		queueName, 			// name
@@ -63,11 +66,13 @@ func NewDispatcher(queueName string, logger log.Logger) Dispatcher {
 		false,		// no-wait
 		nil,			// arguments
 	)
-	logger.Log( "Failed to declare a queue", err)
+	if err != nil {
+		log.Println( "Failed to declare a queue", err)
+	}
+
 	return &AMQPDispatcher{
 		channel: ch,
 		queueName: q.Name,
 		mandatorySend: false,
-		logger: logger,
 	}
 }
