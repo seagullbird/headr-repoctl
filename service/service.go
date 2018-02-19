@@ -2,13 +2,13 @@ package service
 
 import (
 	"context"
-	"github.com/seagullbird/headr-common/mq_helper"
-	"time"
 	"github.com/go-kit/kit/log"
-	"os/exec"
-	"path/filepath"
+	"github.com/seagullbird/headr-common/mq_helper"
 	"github.com/seagullbird/headr-repoctl/config"
 	"os"
+	"os/exec"
+	"path/filepath"
+	"time"
 )
 
 type Service interface {

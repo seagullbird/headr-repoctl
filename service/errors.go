@@ -1,8 +1,8 @@
 package service
 
 import (
-	"github.com/go-errors/errors"
 	"fmt"
+	"github.com/go-errors/errors"
 )
 
 type ErrPathNotExist error

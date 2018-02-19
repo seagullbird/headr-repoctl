@@ -1,16 +1,16 @@
 package main
 
 import (
-	"os"
 	"github.com/go-kit/kit/log"
-	"github.com/seagullbird/headr-repoctl/service"
 	"github.com/seagullbird/headr-common/mq_helper"
-	"github.com/seagullbird/headr-repoctl/endpoint"
-	"github.com/seagullbird/headr-repoctl/transport"
-	"net"
-	"google.golang.org/grpc"
-	"github.com/seagullbird/headr-repoctl/pb"
 	"github.com/seagullbird/headr-repoctl/config"
+	"github.com/seagullbird/headr-repoctl/endpoint"
+	"github.com/seagullbird/headr-repoctl/pb"
+	"github.com/seagullbird/headr-repoctl/service"
+	"github.com/seagullbird/headr-repoctl/transport"
+	"google.golang.org/grpc"
+	"net"
+	"os"
 )
 
 func main() {
@@ -24,8 +24,8 @@ func main() {
 	var dispatcher = mq_helper.NewDispatcher("new_site")
 
 	var (
-		service = service.New(dispatcher, logger)
-		endpoints = endpoint.New(service, logger)
+		service    = service.New(dispatcher, logger)
+		endpoints  = endpoint.New(service, logger)
 		grpcServer = transport.NewGRPCServer(endpoints, logger)
 	)
 
