@@ -3,7 +3,8 @@ package service
 import (
 	"context"
 	"github.com/go-kit/kit/log"
-	"github.com/seagullbird/headr-common/mq_helper"
+	"github.com/seagullbird/headr-common/mq"
+	"github.com/seagullbird/headr-common/mq/dispatch"
 	"github.com/seagullbird/headr-repoctl/config"
 	"os"
 	"os/exec"
@@ -16,7 +17,7 @@ type Service interface {
 	DeleteSite(ctx context.Context, email, sitename string) error
 }
 
-func New(dispatcher mq_helper.Dispatcher, logger log.Logger) Service {
+func New(dispatcher dispatch.Dispatcher, logger log.Logger) Service {
 	var svc Service
 	{
 		svc = NewBasicService(dispatcher)
@@ -26,17 +27,17 @@ func New(dispatcher mq_helper.Dispatcher, logger log.Logger) Service {
 }
 
 type basicService struct {
-	dispatcher mq_helper.Dispatcher
+	dispatcher dispatch.Dispatcher
 }
 
-func NewBasicService(dispatcher mq_helper.Dispatcher) basicService {
+func NewBasicService(dispatcher dispatch.Dispatcher) basicService {
 	return basicService{
 		dispatcher: dispatcher,
 	}
 }
 
 func (s basicService) NewSite(ctx context.Context, email, sitename string) error {
-	evt := mq_helper.NewSiteEvent{
+	evt := mq.NewSiteEvent{
 		email,
 		sitename,
 		time.Now().Unix(),
