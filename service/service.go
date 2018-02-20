@@ -42,7 +42,7 @@ func (s basicService) NewSite(ctx context.Context, email, sitename string) error
 		sitename,
 		time.Now().Unix(),
 	}
-	return s.dispatcher.DispatchMessage(evt)
+	return s.dispatcher.DispatchMessage("new_site", evt)
 }
 
 func (s basicService) DeleteSite(ctx context.Context, email, sitename string) error {
