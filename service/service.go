@@ -39,9 +39,10 @@ func NewBasicService(dispatcher dispatch.Dispatcher) basicService {
 }
 
 func (s basicService) NewSite(ctx context.Context, email, sitename string) error {
-	evt := mq.NewSiteEvent{
+	evt := mq.SiteUpdatedEvent{
 		email,
 		sitename,
+		config.InitialTheme,
 		time.Now().Unix(),
 	}
 	return s.dispatcher.DispatchMessage("new_site", evt)
@@ -76,5 +77,12 @@ func (s basicService) NewPost(ctx context.Context, author, sitename, filename, c
 	if err := ioutil.WriteFile(postPath, []byte(content), 0644); err != nil {
 		return err
 	}
-	return nil
+	// Generate site
+	evt := mq.SiteUpdatedEvent{
+		Email:      author,
+		SiteName:   sitename,
+		Theme:      config.InitialTheme,
+		ReceivedOn: time.Now().Unix(),
+	}
+	return s.dispatcher.DispatchMessage("re_generate", evt)
 }
