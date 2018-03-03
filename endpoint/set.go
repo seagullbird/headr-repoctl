@@ -12,6 +12,7 @@ type Set struct {
 	DeleteSiteEndpoint endpoint.Endpoint
 	NewPostEndpoint    endpoint.Endpoint
 	RemovePostEndpoint endpoint.Endpoint
+	ReadPostEndpoint   endpoint.Endpoint
 }
 
 func New(svc service.Service, logger log.Logger) Set {
@@ -35,11 +36,17 @@ func New(svc service.Service, logger log.Logger) Set {
 		removepostEndpoint = MakeRemovePostEndpoint(svc)
 		removepostEndpoint = LoggingMiddleware(logger)(removepostEndpoint)
 	}
+	var readpostEndpoint endpoint.Endpoint
+	{
+		readpostEndpoint = MakeReadPostEndpoint(svc)
+		readpostEndpoint = LoggingMiddleware(logger)(readpostEndpoint)
+	}
 	return Set{
 		NewSiteEndpoint:    newsiteEndpoint,
 		DeleteSiteEndpoint: deletesiteEndpoint,
 		NewPostEndpoint:    newpostEndpoint,
-		RemovePostEndpoint: removepostEndpoint,
+		RemovePostEndpoint: readpostEndpoint,
+		ReadPostEndpoint:   readpostEndpoint,
 	}
 }
 
@@ -88,6 +95,19 @@ func (s Set) RemovePost(ctx context.Context, author, sitename, filename string) 
 	return response.Err
 }
 
+func (s Set) ReadPost(ctx context.Context, author, sitename, filename string) (string, error) {
+	resp, err := s.ReadPostEndpoint(ctx, ReadPostRequest{
+		Author:   author,
+		Sitename: sitename,
+		Filename: filename,
+	})
+	if err != nil {
+		return "", err
+	}
+	response := resp.(ReadPostResponse)
+	return response.Content, response.Err
+}
+
 func MakeNewSiteEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(NewSiteRequest)
@@ -117,5 +137,13 @@ func MakeRemovePostEndpoint(svc service.Service) endpoint.Endpoint {
 		req := request.(RemovePostRequest)
 		err = svc.RemovePost(ctx, req.Author, req.Sitename, req.Filename)
 		return RemovePostResponse{Err: err}, err
+	}
+}
+
+func MakeReadPostEndpoint(svc service.Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(ReadPostRequest)
+		content, err := svc.ReadPost(ctx, req.Author, req.Sitename, req.Filename)
+		return ReadPostResponse{Content: content, Err: err}, err
 	}
 }

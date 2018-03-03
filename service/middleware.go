@@ -45,3 +45,9 @@ func (mw loggingMiddleware) RemovePost(ctx context.Context, author, sitename, fi
 	mw.logger.Log("method", "DeletePost", "author", author, "sitename", sitename, "filename", filename, "err", err)
 	return
 }
+
+func (mw loggingMiddleware) ReadPost(ctx context.Context, author, sitename, filename string) (content string, err error) {
+	content, err = mw.next.ReadPost(ctx, author, sitename, filename)
+	mw.logger.Log("method", "ReadPost", "author", author, "sitename", sitename, "filename", filename, "err", err)
+	return
+}

@@ -123,6 +123,38 @@ func decodeGRPCRemovePostResponse(_ context.Context, grpcReply interface{}) (int
 	return endpoint.RemovePostResponse{Err: str2err(reply.Err)}, nil
 }
 
+// ReadPost
+func encodeGRPCReadPostRequest(_ context.Context, request interface{}) (interface{}, error) {
+	req := request.(endpoint.ReadPostRequest)
+	return &pb.ReadPostRequest{
+		Author:   req.Author,
+		Sitename: req.Sitename,
+		Filename: req.Filename,
+	}, nil
+}
+
+func decodeGRPCReadPostRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.ReadPostRequest)
+	return endpoint.ReadPostRequest{
+		Author:   req.Author,
+		Sitename: req.Sitename,
+		Filename: req.Filename,
+	}, nil
+}
+
+func encodeGRPCReadPostResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(endpoint.ReadPostResponse)
+	return &pb.ReadPostReply{
+		Content: resp.Content,
+		Err:     err2str(resp.Err),
+	}, nil
+}
+
+func decodeGRPCReadPostResponse(_ context.Context, grpcReply interface{}) (interface{}, error) {
+	reply := grpcReply.(*pb.ReadPostReply)
+	return endpoint.ReadPostResponse{Content: reply.Content, Err: str2err(reply.Err)}, nil
+}
+
 func err2str(err error) string {
 	if err == nil {
 		return ""
