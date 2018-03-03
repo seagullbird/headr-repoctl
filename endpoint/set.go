@@ -10,7 +10,7 @@ import (
 type Set struct {
 	NewSiteEndpoint    endpoint.Endpoint
 	DeleteSiteEndpoint endpoint.Endpoint
-	NewPostEndpoint    endpoint.Endpoint
+	WritePostEndpoint  endpoint.Endpoint
 	RemovePostEndpoint endpoint.Endpoint
 	ReadPostEndpoint   endpoint.Endpoint
 }
@@ -26,10 +26,10 @@ func New(svc service.Service, logger log.Logger) Set {
 		deletesiteEndpoint = MakeDeleteSiteEndpoint(svc)
 		deletesiteEndpoint = LoggingMiddleware(logger)(deletesiteEndpoint)
 	}
-	var newpostEndpoint endpoint.Endpoint
+	var writepostEndpoint endpoint.Endpoint
 	{
-		newpostEndpoint = MakeNewPostEndpoint(svc)
-		newpostEndpoint = LoggingMiddleware(logger)(newpostEndpoint)
+		writepostEndpoint = MakeWritePostEndpoint(svc)
+		writepostEndpoint = LoggingMiddleware(logger)(writepostEndpoint)
 	}
 	var removepostEndpoint endpoint.Endpoint
 	{
@@ -44,7 +44,7 @@ func New(svc service.Service, logger log.Logger) Set {
 	return Set{
 		NewSiteEndpoint:    newsiteEndpoint,
 		DeleteSiteEndpoint: deletesiteEndpoint,
-		NewPostEndpoint:    newpostEndpoint,
+		WritePostEndpoint:  writepostEndpoint,
 		RemovePostEndpoint: readpostEndpoint,
 		ReadPostEndpoint:   readpostEndpoint,
 	}
@@ -68,8 +68,8 @@ func (s Set) DeleteSite(ctx context.Context, email, sitename string) error {
 	return response.Err
 }
 
-func (s Set) NewPost(ctx context.Context, author, sitename, filename, content string) error {
-	resp, err := s.NewPostEndpoint(ctx, NewPostRequest{
+func (s Set) WritePost(ctx context.Context, author, sitename, filename, content string) error {
+	resp, err := s.WritePostEndpoint(ctx, WritePostRequest{
 		Author:   author,
 		Sitename: sitename,
 		Filename: filename,
@@ -78,7 +78,7 @@ func (s Set) NewPost(ctx context.Context, author, sitename, filename, content st
 	if err != nil {
 		return err
 	}
-	response := resp.(NewPostResponse)
+	response := resp.(WritePostResponse)
 	return response.Err
 }
 
@@ -124,11 +124,11 @@ func MakeDeleteSiteEndpoint(svc service.Service) endpoint.Endpoint {
 	}
 }
 
-func MakeNewPostEndpoint(svc service.Service) endpoint.Endpoint {
+func MakeWritePostEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		req := request.(NewPostRequest)
-		err = svc.NewPost(ctx, req.Author, req.Sitename, req.Filename, req.Content)
-		return NewPostResponse{Err: err}, err
+		req := request.(WritePostRequest)
+		err = svc.WritePost(ctx, req.Author, req.Sitename, req.Filename, req.Content)
+		return WritePostResponse{Err: err}, err
 	}
 }
 

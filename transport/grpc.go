@@ -37,9 +37,9 @@ func NewGRPCServer(endpoints endpoint.Set, logger log.Logger) pb.RepoctlServer {
 			options...,
 		),
 		newpost: grpctransport.NewServer(
-			endpoints.NewPostEndpoint,
-			decodeGRPCNewPostRequest,
-			encodeGRPCNewPostResponse,
+			endpoints.WritePostEndpoint,
+			decodeGRPCWritePostRequest,
+			encodeGRPCWritePostResponse,
 			options...,
 		),
 		rmpost: grpctransport.NewServer(
@@ -85,10 +85,10 @@ func NewGRPCClient(conn *grpc.ClientConn, logger log.Logger) service.Service {
 		newpostEndpoint = grpctransport.NewClient(
 			conn,
 			"pb.Repoctl",
-			"NewPost",
-			encodeGRPCNewPostRequest,
-			decodeGRPCNewPostResponse,
-			pb.NewPostReply{},
+			"WritePost",
+			encodeGRPCWritePostRequest,
+			decodeGRPCWritePostResponse,
+			pb.WritePostReply{},
 		).Endpoint()
 	}
 	var deletepostEndpoint kitendpoint.Endpoint
@@ -119,7 +119,7 @@ func NewGRPCClient(conn *grpc.ClientConn, logger log.Logger) service.Service {
 	return endpoint.Set{
 		NewSiteEndpoint:    newsiteEndpoint,
 		DeleteSiteEndpoint: deletesiteEndpoint,
-		NewPostEndpoint:    newpostEndpoint,
+		WritePostEndpoint:  newpostEndpoint,
 		RemovePostEndpoint: deletepostEndpoint,
 		ReadPostEndpoint:   readpostEndpoint,
 	}
@@ -141,12 +141,12 @@ func (s *grpcServer) DeleteSite(ctx context.Context, req *pb.DeleteSiteRequest) 
 	return rep.(*pb.DeleteSiteReply), nil
 }
 
-func (s *grpcServer) NewPost(ctx context.Context, req *pb.NewPostRequest) (*pb.NewPostReply, error) {
+func (s *grpcServer) WritePost(ctx context.Context, req *pb.WritePostRequest) (*pb.WritePostReply, error) {
 	_, rep, err := s.newpost.ServeGRPC(ctx, req)
 	if err != nil {
 		return nil, err
 	}
-	return rep.(*pb.NewPostReply), nil
+	return rep.(*pb.WritePostReply), nil
 }
 
 func (s *grpcServer) RemovePost(ctx context.Context, req *pb.RemovePostRequest) (*pb.RemovePostReply, error) {
