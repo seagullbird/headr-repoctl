@@ -1,21 +1,15 @@
 package service
 
 import (
-	"fmt"
+	"github.com/go-errors/errors"
 )
 
 // ErrPathNotExist indicates a PathNotExist error
-type ErrPathNotExist error
+var ErrPathNotExist = errors.New("path does not exist")
 
 // ErrUnexpected indicates an unexpected error
-type ErrUnexpected error
+var ErrUnexpected = errors.New("unexpected error")
 
-// MakeErrPathNotExist returns a PathNotExist error with the given path.
-func MakeErrPathNotExist(path string) ErrPathNotExist {
-	return fmt.Errorf("Path not exist: %s", path)
-}
-
-// MakeErrUnexpected returns all unexpected error with error message.
-func MakeErrUnexpected(err error) ErrUnexpected {
-	return fmt.Errorf("Unexpected error: %v", err)
-}
+// ErrInvalidSiteID indicates an invalid SiteID
+// Typically a SiteID <= 0
+var ErrInvalidSiteID = errors.New("invalid siteID")
