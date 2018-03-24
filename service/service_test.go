@@ -139,7 +139,7 @@ func (s basicServiceTest) TestWritePost(t *testing.T) {
 		expected error
 	}{
 		{"Invalid SiteID 0", 0, "", "", service.ErrInvalidSiteID},
-		{"Normal Functioning", 1, "test-write-post.md", "This is a test file", nil},
+		{"Normal Functioning", 1, "test-post.md", "This is a test file", nil},
 	}
 
 	for _, tt := range tests {
@@ -150,7 +150,7 @@ func (s basicServiceTest) TestWritePost(t *testing.T) {
 			}
 			if output == nil {
 				// make sure the file is there and its content
-				postpath := service.PostPath(1, "test-write-post.md")
+				postpath := service.PostPath(1, "test-post.md")
 				if _, err := os.Stat(postpath); os.IsNotExist(err) {
 					t.Fatalf("write post failed, post path does not exist: %v", err)
 				}
@@ -174,13 +174,14 @@ func (s basicServiceTest) TestRemovePost(t *testing.T) {
 		expected error
 	}{
 		{"Invalid SiteID 0", 0, "", service.ErrInvalidSiteID},
-		{"Normal Functioning", 1, "test-write-post.md", nil},
+		{"Path Not Exists", 2, "test-post.md", service.ErrPathNotExist},
+		{"Normal Functioning", 1, "test-post.md", nil},
 	}
 	postspath := service.PostsPath(1)
 	if err := os.MkdirAll(postspath, 0644); err != nil {
 		t.Fatalf("Creating post file directory failed: %v", err)
 	}
-	postpath := service.PostPath(1, "test-write-post.md")
+	postpath := service.PostPath(1, "test-post.md")
 	if _, err := os.Create(postpath); err != nil {
 		t.Fatalf("Creating post file failed: %v", err)
 	}
@@ -210,13 +211,14 @@ func (s basicServiceTest) TestReadPost(t *testing.T) {
 		expectedError   error
 	}{
 		{"Invalid SiteID 0", 0, "", "", service.ErrInvalidSiteID},
-		{"Normal Functioning", 1, "test-write-post.md", "This is a test file", nil},
+		{"Path Not Exists", 2, "test-post.md", "", service.ErrPathNotExist},
+		{"Normal Functioning", 1, "test-post.md", "This is a test file", nil},
 	}
 	postspath := service.PostsPath(1)
 	if err := os.MkdirAll(postspath, 0644); err != nil {
 		t.Fatalf("Creating post file directory failed: %v", err)
 	}
-	postpath := service.PostPath(1, "test-write-post.md")
+	postpath := service.PostPath(1, "test-post.md")
 	if err := ioutil.WriteFile(postpath, []byte("This is a test file"), 0644); err != nil {
 		t.Fatalf("Failed to write file content: %v", err)
 	}

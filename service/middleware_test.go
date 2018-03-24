@@ -31,7 +31,7 @@ func (mwt loggingMiddlewareTest) TestNewSite(t *testing.T) {
 	get := mwt.buffer.String()
 	mwt.buffer.Reset()
 	if want != get {
-		t.Fatal("NewSite log mismatches")
+		t.Fatal("NewSite log mismatches\n", "want:\n", want, "get\n", get)
 	}
 }
 
@@ -43,39 +43,41 @@ func (mwt loggingMiddlewareTest) TestDeleteSite(t *testing.T) {
 	get := mwt.buffer.String()
 	mwt.buffer.Reset()
 	if want != get {
-		t.Fatal("DeleteSite log mismatches")
+		t.Fatal("DeleteSite log mismatches\n", "want:\n", want, "get\n", get)
 	}
 }
 
 func (mwt loggingMiddlewareTest) TestWritePost(t *testing.T) {
 	mwt.next.TestWritePost(t)
 	want := "method=WritePost siteID=0 filename= err=\"invalid siteID\"\n" +
-		"method=WritePost siteID=1 filename=test-write-post.md err=null\n"
+		"method=WritePost siteID=1 filename=test-post.md err=null\n"
 	get := mwt.buffer.String()
 	mwt.buffer.Reset()
 	if want != get {
-		t.Fatal("WritePost log mismatches")
+		t.Fatal("WritePost log mismatches\n", "want:\n", want, "get\n", get)
 	}
 }
 
 func (mwt loggingMiddlewareTest) TestRemovePost(t *testing.T) {
 	mwt.next.TestRemovePost(t)
 	want := "method=RemovePost siteID=0 filename= err=\"invalid siteID\"\n" +
-		"method=RemovePost siteID=1 filename=test-write-post.md err=null\n"
+		"method=RemovePost siteID=2 filename=test-post.md err=\"path does not exist\"\n" +
+		"method=RemovePost siteID=1 filename=test-post.md err=null\n"
 	get := mwt.buffer.String()
 	mwt.buffer.Reset()
 	if want != get {
-		t.Fatal("RemovePost log mismatches")
+		t.Fatal("RemovePost log mismatches\n", "want:\n", want, "get\n", get)
 	}
 }
 
 func (mwt loggingMiddlewareTest) TestReadPost(t *testing.T) {
 	mwt.next.TestReadPost(t)
 	want := "method=ReadPost siteID=0 filename= err=\"invalid siteID\"\n" +
-		"method=ReadPost siteID=1 filename=test-write-post.md err=null\n"
+		"method=ReadPost siteID=2 filename=test-post.md err=\"path does not exist\"\n" +
+		"method=ReadPost siteID=1 filename=test-post.md err=null\n"
 	get := mwt.buffer.String()
 	mwt.buffer.Reset()
 	if want != get {
-		t.Fatal("ReadPost log mismatches")
+		t.Fatal("ReadPost log mismatches\n", "want:\n", want, "get\n", get)
 	}
 }

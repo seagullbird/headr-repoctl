@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"github.com/go-kit/kit/log"
 	"github.com/seagullbird/headr-common/mq"
 	"github.com/seagullbird/headr-common/mq/dispatch"
@@ -43,6 +44,16 @@ func NewBasicService(dispatcher dispatch.Dispatcher) Service {
 		dispatcher: dispatcher,
 	}
 }
+
+// ErrPathNotExist indicates a PathNotExist error
+var ErrPathNotExist = errors.New("path does not exist")
+
+// ErrUnexpected indicates an unexpected error
+var ErrUnexpected = errors.New("unexpected error")
+
+// ErrInvalidSiteID indicates an invalid SiteID
+// Typically a SiteID <= 0
+var ErrInvalidSiteID = errors.New("invalid siteID")
 
 func (s basicService) NewSite(ctx context.Context, siteID uint) error {
 	if siteID <= 0 {
