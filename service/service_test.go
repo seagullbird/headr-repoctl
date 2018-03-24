@@ -1,4 +1,4 @@
-package servicetest
+package service_test
 
 import (
 	"bytes"
@@ -6,6 +6,7 @@ import (
 	"github.com/golang/mock/gomock"
 	mqdispatchmock "github.com/seagullbird/headr-common/mq/dispatch/mock"
 	"github.com/seagullbird/headr-repoctl/service"
+	"github.com/seagullbird/headr-repoctl/servicetest"
 	"testing"
 )
 
@@ -18,7 +19,7 @@ func TestServiceTest(t *testing.T) {
 	var buf bytes.Buffer
 	logger := log.NewLogfmtLogger(&buf)
 	svc := service.New(mockDispatcher, logger)
-	svctest := New(svc, &buf)
+	svctest := servicetest.New(svc, &buf)
 
-	RunTests(t, svctest)
+	servicetest.RunTests(t, svctest)
 }
