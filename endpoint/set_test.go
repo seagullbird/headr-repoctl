@@ -6,10 +6,8 @@ import (
 	"github.com/go-errors/errors"
 	"github.com/go-kit/kit/log"
 	"github.com/golang/mock/gomock"
-	"github.com/seagullbird/headr-repoctl/config"
 	"github.com/seagullbird/headr-repoctl/endpoint"
 	svcmock "github.com/seagullbird/headr-repoctl/service/mock"
-	"os"
 	"testing"
 )
 
@@ -54,7 +52,7 @@ func TestSet(t *testing.T) {
 			mockSvc.EXPECT().RemovePost(gomock.Any(), gomock.Any(), gomock.Any()).Return(tt.rets["RemovePost"]...).Times(2)
 			mockSvc.EXPECT().ReadPost(gomock.Any(), gomock.Any(), gomock.Any()).Return(tt.rets["ReadPost"]...).Times(2)
 
-			t.Run("NewSite", clearEnvWrapper(t, func(t *testing.T) {
+			t.Run("NewSite", func(t *testing.T) {
 				ctx := context.Background()
 				siteID := uint(1)
 				setErr := endpoints.NewSite(ctx, siteID)
@@ -62,8 +60,8 @@ func TestSet(t *testing.T) {
 				if setErr != svcErr {
 					t.Fatal(setErr)
 				}
-			}))
-			t.Run("DeleteSite", clearEnvWrapper(t, func(t *testing.T) {
+			})
+			t.Run("DeleteSite", func(t *testing.T) {
 				ctx := context.Background()
 				siteID := uint(1)
 				setErr := endpoints.DeleteSite(ctx, siteID)
@@ -71,8 +69,8 @@ func TestSet(t *testing.T) {
 				if setErr != svcErr {
 					t.Fatal(setErr)
 				}
-			}))
-			t.Run("WritePost", clearEnvWrapper(t, func(t *testing.T) {
+			})
+			t.Run("WritePost", func(t *testing.T) {
 				ctx := context.Background()
 				siteID := uint(1)
 				filename := "filename"
@@ -82,8 +80,8 @@ func TestSet(t *testing.T) {
 				if setErr != svcErr {
 					t.Fatal(setErr)
 				}
-			}))
-			t.Run("RemovePost", clearEnvWrapper(t, func(t *testing.T) {
+			})
+			t.Run("RemovePost", func(t *testing.T) {
 				ctx := context.Background()
 				siteID := uint(1)
 				filename := "filename"
@@ -92,8 +90,8 @@ func TestSet(t *testing.T) {
 				if setErr != svcErr {
 					t.Fatal("setErr=", setErr, "svcErr=", svcErr)
 				}
-			}))
-			t.Run("ReadPost", clearEnvWrapper(t, func(t *testing.T) {
+			})
+			t.Run("ReadPost", func(t *testing.T) {
 				ctx := context.Background()
 				siteID := uint(1)
 				filename := "filename"
@@ -102,18 +100,7 @@ func TestSet(t *testing.T) {
 				if setOutput != svcOutput || setErr != svcErr {
 					t.Fatal(setOutput, setErr)
 				}
-			}))
+			})
 		})
 	}
-}
-
-func clearEnvWrapper(t *testing.T, tester func(t *testing.T)) func(t *testing.T) {
-	if err := os.RemoveAll(config.SITESDIR); !(err == nil || os.IsNotExist(err)) {
-		t.Fatalf("Removing SITESDIR failed: %v", err)
-	}
-
-	if err := os.MkdirAll(config.SITESDIR, 0644); err != nil {
-		t.Fatalf("Creating SITESDIR failed: %v", err)
-	}
-	return tester
 }
