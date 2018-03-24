@@ -11,4 +11,7 @@ for d in $(go list ./...); do
     fi
 done
 
-bash <(curl -s https://codecov.io/bash)
+# $PUSH_TO_CODECOV is only set in the remote environment of wercker
+if [ $PUSH_TO_CODECOV ]; then
+   bash <(curl -s https://codecov.io/bash)
+fi

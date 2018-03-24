@@ -1,9 +1,7 @@
-package servicetest
+package service_test
 
 import (
 	"bytes"
-	"github.com/seagullbird/headr-repoctl/config"
-	"os"
 	"testing"
 )
 
@@ -79,54 +77,5 @@ func (mwt loggingMiddlewareTest) TestReadPost(t *testing.T) {
 	mwt.buffer.Reset()
 	if want != get {
 		t.Fatal("ReadPost log mismatches")
-	}
-}
-
-// EnvClearTestMiddleware is a dedicated middleware for testing
-// It is the outermost middleware which does only environment clearing
-func EnvClearTestMiddleware() MiddlewareTest {
-	return func(next ServiceTest) ServiceTest {
-		return envClearTestMiddleware{
-			next: next,
-		}
-	}
-}
-
-type envClearTestMiddleware struct {
-	next ServiceTest
-}
-
-func (tmw envClearTestMiddleware) TestNewSite(t *testing.T) {
-	clearEnv(t)
-	tmw.next.TestNewSite(t)
-}
-
-func (tmw envClearTestMiddleware) TestDeleteSite(t *testing.T) {
-	clearEnv(t)
-	tmw.next.TestDeleteSite(t)
-}
-
-func (tmw envClearTestMiddleware) TestWritePost(t *testing.T) {
-	clearEnv(t)
-	tmw.next.TestWritePost(t)
-}
-
-func (tmw envClearTestMiddleware) TestRemovePost(t *testing.T) {
-	clearEnv(t)
-	tmw.next.TestRemovePost(t)
-}
-
-func (tmw envClearTestMiddleware) TestReadPost(t *testing.T) {
-	clearEnv(t)
-	tmw.next.TestReadPost(t)
-}
-
-func clearEnv(t *testing.T) {
-	if err := os.RemoveAll(config.SITESDIR); !(err == nil || os.IsNotExist(err)) {
-		t.Fatalf("Removing SITESDIR failed: %v", err)
-	}
-
-	if err := os.MkdirAll(config.SITESDIR, 0644); err != nil {
-		t.Fatalf("Creating SITESDIR failed: %v", err)
 	}
 }
