@@ -13,7 +13,7 @@ import (
 	"testing"
 )
 
-func TestServiceTest(t *testing.T) {
+func TestService(t *testing.T) {
 	mockctrl := gomock.NewController(t)
 	defer mockctrl.Finish()
 	mockDispatcher := mqdispatchmock.NewMockDispatcher(mockctrl)
