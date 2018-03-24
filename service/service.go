@@ -1,5 +1,7 @@
 package service
 
+//go:generate mockgen -destination=./mock/mock_service.go -package=mock github.com/seagullbird/headr-repoctl/service Service
+
 import (
 	"context"
 	"errors"
