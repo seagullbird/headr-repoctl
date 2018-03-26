@@ -125,7 +125,7 @@ func MakeNewSiteEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(NewSiteRequest)
 		err = svc.NewSite(ctx, req.SiteID)
-		return NewSiteResponse{Err: err}, err
+		return NewSiteResponse{Err: err}, nil
 	}
 }
 
@@ -134,7 +134,7 @@ func MakeDeleteSiteEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(DeleteSiteRequest)
 		err = svc.DeleteSite(ctx, req.SiteID)
-		return DeleteSiteResponse{Err: err}, err
+		return DeleteSiteResponse{Err: err}, nil
 	}
 }
 
@@ -143,7 +143,7 @@ func MakeWritePostEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(WritePostRequest)
 		err = svc.WritePost(ctx, req.SiteID, req.Filename, req.Content)
-		return WritePostResponse{Err: err}, err
+		return WritePostResponse{Err: err}, nil
 	}
 }
 
@@ -152,7 +152,7 @@ func MakeRemovePostEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(RemovePostRequest)
 		err = svc.RemovePost(ctx, req.SiteID, req.Filename)
-		return RemovePostResponse{Err: err}, err
+		return RemovePostResponse{Err: err}, nil
 	}
 }
 
@@ -161,6 +161,6 @@ func MakeReadPostEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(ReadPostRequest)
 		content, err := svc.ReadPost(ctx, req.SiteID, req.Filename)
-		return ReadPostResponse{Content: content, Err: err}, err
+		return ReadPostResponse{Content: content, Err: err}, nil
 	}
 }
