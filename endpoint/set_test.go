@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"github.com/go-errors/errors"
+	kitendpoint "github.com/go-kit/kit/endpoint"
 	"github.com/go-kit/kit/log"
 	"github.com/golang/mock/gomock"
 	"github.com/seagullbird/headr-repoctl/endpoint"
@@ -102,5 +103,39 @@ func TestSet(t *testing.T) {
 				}
 			})
 		})
+	}
+}
+
+// In fact this part is tested in grpc_test.TestGRPCTransport, dual here for good coverage report
+func TestSetBadEndpoint(t *testing.T) {
+	makeBadEndpoint := func() kitendpoint.Endpoint {
+		return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+			return nil, errors.New("dummy error")
+		}
+	}
+
+	endpoints := endpoint.Set{
+		NewSiteEndpoint:    makeBadEndpoint(),
+		DeleteSiteEndpoint: makeBadEndpoint(),
+		WritePostEndpoint:  makeBadEndpoint(),
+		RemovePostEndpoint: makeBadEndpoint(),
+		ReadPostEndpoint:   makeBadEndpoint(),
+	}
+
+	expectedMsg := "dummy error"
+	if err := endpoints.NewSite(context.Background(), 1); err.Error() != expectedMsg {
+		t.Fatal(err)
+	}
+	if err := endpoints.DeleteSite(context.Background(), 1); err.Error() != expectedMsg {
+		t.Fatal(err)
+	}
+	if err := endpoints.WritePost(context.Background(), 1, "", ""); err.Error() != expectedMsg {
+		t.Fatal(err)
+	}
+	if err := endpoints.RemovePost(context.Background(), 1, ""); err.Error() != expectedMsg {
+		t.Fatal(err)
+	}
+	if _, err := endpoints.ReadPost(context.Background(), 1, ""); err.Error() != expectedMsg {
+		t.Fatal(err)
 	}
 }

@@ -21,37 +21,12 @@ type Set struct {
 // New returns a Set that wraps the provided server, and wires in all of the
 // expected endpoint middlewares via the various parameters.
 func New(svc service.Service, logger log.Logger) Set {
-	var newsiteEndpoint endpoint.Endpoint
-	{
-		newsiteEndpoint = MakeNewSiteEndpoint(svc)
-		newsiteEndpoint = LoggingMiddleware(logger)(newsiteEndpoint)
-	}
-	var deletesiteEndpoint endpoint.Endpoint
-	{
-		deletesiteEndpoint = MakeDeleteSiteEndpoint(svc)
-		deletesiteEndpoint = LoggingMiddleware(logger)(deletesiteEndpoint)
-	}
-	var writepostEndpoint endpoint.Endpoint
-	{
-		writepostEndpoint = MakeWritePostEndpoint(svc)
-		writepostEndpoint = LoggingMiddleware(logger)(writepostEndpoint)
-	}
-	var removepostEndpoint endpoint.Endpoint
-	{
-		removepostEndpoint = MakeRemovePostEndpoint(svc)
-		removepostEndpoint = LoggingMiddleware(logger)(removepostEndpoint)
-	}
-	var readpostEndpoint endpoint.Endpoint
-	{
-		readpostEndpoint = MakeReadPostEndpoint(svc)
-		readpostEndpoint = LoggingMiddleware(logger)(readpostEndpoint)
-	}
 	return Set{
-		NewSiteEndpoint:    newsiteEndpoint,
-		DeleteSiteEndpoint: deletesiteEndpoint,
-		WritePostEndpoint:  writepostEndpoint,
-		RemovePostEndpoint: removepostEndpoint,
-		ReadPostEndpoint:   readpostEndpoint,
+		NewSiteEndpoint:    Middlewares(MakeNewSiteEndpoint(svc), logger),
+		DeleteSiteEndpoint: Middlewares(MakeDeleteSiteEndpoint(svc), logger),
+		WritePostEndpoint:  Middlewares(MakeWritePostEndpoint(svc), logger),
+		RemovePostEndpoint: Middlewares(MakeRemovePostEndpoint(svc), logger),
+		ReadPostEndpoint:   Middlewares(MakeReadPostEndpoint(svc), logger),
 	}
 }
 
