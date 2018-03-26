@@ -7,10 +7,10 @@ import (
 
 	"context"
 	"errors"
+	kitendpoint "github.com/go-kit/kit/endpoint"
 	"github.com/go-kit/kit/log"
 	"github.com/seagullbird/headr-repoctl/endpoint"
 	"github.com/seagullbird/headr-repoctl/pb"
-	"github.com/seagullbird/headr-repoctl/service"
 	"github.com/seagullbird/headr-repoctl/transport"
 	"google.golang.org/grpc"
 	"net"
@@ -20,17 +20,13 @@ const (
 	port = ":1234"
 )
 
-func startServer(t *testing.T, svc service.Service) {
-	logger := log.NewNopLogger()
-	endpoints := endpoint.New(svc, logger)
+func startServer(t *testing.T, baseServer *grpc.Server, endpoints endpoint.Set, logger log.Logger) {
 	grpcServer := transport.NewGRPCServer(endpoints, logger)
 	grpcListener, err := net.Listen("tcp", port)
 	if err != nil {
 		t.Fatal(err)
 	}
-	baseServer := grpc.NewServer()
 	pb.RegisterRepoctlServer(baseServer, grpcServer)
-
 	baseServer.Serve(grpcListener)
 }
 
@@ -71,10 +67,13 @@ func TestGRPCApplication(t *testing.T) {
 		mockSvc.EXPECT().ReadPost(gomock.Any(), gomock.Any(), gomock.Any()).Return(rets["ReadPost"]...).Times(times)
 	}
 	// Start GRPC server with the mock service
-	go startServer(t, mockSvc)
+	logger := log.NewNopLogger()
+	endpoints := endpoint.New(mockSvc, logger)
+	baseServer := grpc.NewServer()
+	go startServer(t, baseServer, endpoints, logger)
 
 	// Start GRPC client
-	conn, err := grpc.Dial("localhost:1234", grpc.WithInsecure())
+	conn, err := grpc.Dial("localhost"+port, grpc.WithInsecure())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -160,4 +159,53 @@ func TestGRPCApplication(t *testing.T) {
 			})
 		})
 	}
+
+	baseServer.Stop()
+}
+
+// This Test on the other hand focuses on transport level error,
+// such as "rpc error: code = Unknown desc = transport is closing", which are defined by grpc but not the service author.
+// I want to make sure that when a transport level error occurs, the client will receive the right transport error.
+func TestGRPCTransport(t *testing.T) {
+	makeBadEndpoint := func() kitendpoint.Endpoint {
+		return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+			return nil, errors.New("dummy error")
+		}
+	}
+
+	endpoints := endpoint.Set{
+		NewSiteEndpoint:    makeBadEndpoint(),
+		DeleteSiteEndpoint: makeBadEndpoint(),
+		WritePostEndpoint:  makeBadEndpoint(),
+		RemovePostEndpoint: makeBadEndpoint(),
+		ReadPostEndpoint:   makeBadEndpoint(),
+	}
+	baseServer := grpc.NewServer()
+	go startServer(t, baseServer, endpoints, log.NewNopLogger())
+
+	// Start GRPC client
+	conn, err := grpc.Dial("localhost"+port, grpc.WithInsecure())
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	client := transport.NewGRPCClient(conn, nil)
+	expectedMsg := "rpc error: code = Unknown desc = dummy error"
+	if err := client.NewSite(context.Background(), 1); err.Error() != expectedMsg {
+		t.Fatal(err)
+	}
+	if err := client.DeleteSite(context.Background(), 1); err.Error() != expectedMsg {
+		t.Fatal(err)
+	}
+	if err := client.WritePost(context.Background(), 1, "", ""); err.Error() != expectedMsg {
+		t.Fatal(err)
+	}
+	if err := client.RemovePost(context.Background(), 1, ""); err.Error() != expectedMsg {
+		t.Fatal(err)
+	}
+	if _, err := client.ReadPost(context.Background(), 1, ""); err.Error() != expectedMsg {
+		t.Fatal(err)
+	}
+
+	baseServer.Stop()
 }
