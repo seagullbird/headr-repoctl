@@ -11,7 +11,6 @@ import (
 	"github.com/seagullbird/headr-repoctl/config"
 	"io/ioutil"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strconv"
 	"time"
@@ -82,9 +81,7 @@ func (s basicService) DeleteSite(ctx context.Context, siteID uint) error {
 		}
 		return ErrUnexpected
 	}
-	cmd := exec.Command("rm", "-rf", sitepath)
-	cmd.Stderr = os.Stderr
-	return cmd.Run()
+	return os.RemoveAll(sitepath)
 }
 
 func (s basicService) WritePost(ctx context.Context, siteID uint, filename, content string) error {
@@ -125,10 +122,7 @@ func (s basicService) RemovePost(ctx context.Context, siteID uint, filename stri
 		}
 		return ErrUnexpected
 	}
-	// TODO: Replace this with os
-	cmd := exec.Command("rm", postPath)
-	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
+	if err := os.Remove(postPath); err != nil {
 		return err
 	}
 	// Generate site
