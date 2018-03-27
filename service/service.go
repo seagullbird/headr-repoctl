@@ -125,6 +125,7 @@ func (s basicService) RemovePost(ctx context.Context, siteID uint, filename stri
 		}
 		return ErrUnexpected
 	}
+	// TODO: Replace this with os
 	cmd := exec.Command("rm", postPath)
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
