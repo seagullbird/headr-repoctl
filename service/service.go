@@ -160,7 +160,16 @@ func (s basicService) WriteConfig(ctx context.Context, siteID uint, config strin
 
 	sitePath := SitePath(siteID)
 	configFilePath := filepath.Join(sitePath, "source", "config.json")
-	return ioutil.WriteFile(configFilePath, []byte(config), 0644)
+	err := ioutil.WriteFile(configFilePath, []byte(config), 0644)
+	if err != nil {
+		return err
+	}
+	// Generate site
+	evt := mq.SiteUpdatedEvent{
+		SiteID:     siteID,
+		ReceivedOn: time.Now().Unix(),
+	}
+	return s.dispatcher.DispatchMessage("re_generate", evt)
 }
 
 func (s basicService) ReadConfig(ctx context.Context, siteID uint) (string, error) {

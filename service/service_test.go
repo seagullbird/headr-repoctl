@@ -18,7 +18,7 @@ func TestService(t *testing.T) {
 	mockctrl := gomock.NewController(t)
 	defer mockctrl.Finish()
 	mockDispatcher := mqdispatchmock.NewMockDispatcher(mockctrl)
-	mockDispatcher.EXPECT().DispatchMessage(gomock.Any(), gomock.Any()).Return(nil).Times(3)
+	mockDispatcher.EXPECT().DispatchMessage(gomock.Any(), gomock.Any()).Return(nil).Times(4)
 
 	var buf bytes.Buffer
 	logger := log.NewLogfmtLogger(&buf)
