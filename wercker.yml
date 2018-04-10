@@ -54,6 +54,7 @@ deploy-to-kubernetes:
         code: |
           mkdir $WERCKER_OUTPUT_DIR/kubernetes
           mv k8s/k8s-deploy.yaml $WERCKER_OUTPUT_DIR/kubernetes
+          cat $WERCKER_OUTPUT_DIR/kubernetes/k8s-deploy.yaml
     - riceo/kubectl:
         name: "Deploy to Kubernetes"
         server: $KUBERNETES_MASTER
