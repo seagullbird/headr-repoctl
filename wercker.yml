@@ -45,7 +45,9 @@ push-image:
   steps:
     - script:
       name: "Move Kubernetes files"
-      code: mv k8s-deploy.yaml.template $WERCKER_OUTPUT_DIR
+      code: |
+        mv k8s-deploy.yaml.template $WERCKER_OUTPUT_DIR
+        ls -alh $WERCKER_ROOT
     - internal/docker-scratch-push:
         cmd: ./repoctl
         tag: $WERCKER_GIT_COMMIT
