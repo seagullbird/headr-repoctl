@@ -33,3 +33,12 @@ build:
         name: "Test"
         code: |
           ./test.sh
+    - script:
+        name: "go build"
+        code: |
+          make build
+    - internal/docker-push:
+        entrypoint: build/repoctl
+        tag: $WERCKER_GIT_COMMIT
+        username: $DOCKERHUB_USERNAME
+        password: $DOCKERHUB_PASSWORD
