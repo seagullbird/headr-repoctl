@@ -40,5 +40,6 @@ build:
     - internal/docker-push:
         entrypoint: build/repoctl
         tag: $WERCKER_GIT_COMMIT
+        repository: $DOCKERHUB_REPO
         username: $DOCKERHUB_USERNAME
         password: $DOCKERHUB_PASSWORD
