@@ -20,7 +20,7 @@ spec:
          claimName: data-claim
       containers:
       - name: repoctl
-        image: ${DOCKERHUB_REPO}:${WERCKER_GIT_COMMIT}
+        image: ${GCR_TAG}:${WERCKER_GIT_COMMIT}
         imagePullPolicy: IfNotPresent
         volumeMounts:
           - mountPath: "/data"
