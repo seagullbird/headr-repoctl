@@ -40,9 +40,10 @@ build:
     - internal/docker-push:
         entrypoint: build/repoctl
         tag: $WERCKER_GIT_COMMIT
-        repository: $DOCKERHUB_REPO
-        username: $DOCKERHUB_USERNAME
-        password: $DOCKERHUB_PASSWORD
+        repository: $GCR_TAG
+        registry: $GCR_HOST/v2
+        username: _json_key
+        password: $GCP_KEY_JSON
 
 deploy-to-kubernetes:
   steps:
@@ -53,10 +54,11 @@ deploy-to-kubernetes:
         code: |
           mkdir $WERCKER_OUTPUT_DIR/kubernetes
           mv k8s/k8s-deploy.yaml $WERCKER_OUTPUT_DIR/kubernetes
-    - kubectl:
+    - riceo/kubectl:
         name: "Deploy to Kubernetes"
         server: $KUBERNETES_MASTER
-        username: $KUBERNETES_USERNAME
-        password: $KUBERNETES_PASSWORD
-        insecure-skip-tls-verify: true
+        gcloud-key-json: $GCP_KEY_JSON
+        gke-cluster-name: $GKE_CLUSTER_NAME
+        gke-cluster-zone: $GKE_CLUSTER_ZONE
+        gke-cluster-project: $GKE_CLUSTER_PROJECT
         command: apply -f $WERCKER_OUTPUT_DIR/kubernetes/
