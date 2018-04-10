@@ -4,6 +4,7 @@ metadata:
   name: repoctl
   labels:
     app: repoctl
+    commit: ${WERCKER_GIT_COMMIT}
 spec:
   replicas: 1
   selector:
@@ -20,7 +21,7 @@ spec:
          claimName: data-claim
       containers:
       - name: repoctl
-        image: {{ .Repository }}:{{ .Commit }}
+        image: ${DOCKERHUB_REPO}:${WERCKER_GIT_COMMIT}
         imagePullPolicy: IfNotPresent
         volumeMounts:
           - mountPath: "/data"
@@ -36,4 +37,4 @@ spec:
   ports:
   - protocol: TCP
     port: 2018
-    targetPort: {{ .Port }}
+    targetPort: 8687

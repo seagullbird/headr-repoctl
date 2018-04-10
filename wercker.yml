@@ -43,3 +43,22 @@ build:
         repository: $DOCKERHUB_REPO
         username: $DOCKERHUB_USERNAME
         password: $DOCKERHUB_PASSWORD
+
+deploy-to-kubernetes:
+  steps:
+    - script:
+        name: "Prepare Kubernetes files"
+        code: |
+          cat k8s/k8s.yaml | \
+          gsed -E "s/\{\{(\s*)\.Repository(\s*)\}\}/$(DOCKERHUB_REPO)/g" | \
+          gsed -E "s/\{\{(\s*)\.Commit(\s*)\}\}/$(COMMIT)/g" | \
+          gsed -E "s/\{\{(\s*)\.Port(\s*)\}\}/8687/g" > tmp.yaml
+          mkdir $WERCKER_OUTPUT_DIR/kubernetes
+          mv tmp.yml $WERCKER_OUTPUT_DIR/kubernetes
+    - kubectl:
+        name: "Deploy to Kubernetes"
+        server: $KUBERNETES_MASTER
+        username: $KUBERNETES_USERNAME
+        password: $KUBERNETES_PASSWORD
+        insecure-skip-tls-verify: true
+        command: apply -f $WERCKER_OUTPUT_DIR/kubernetes/

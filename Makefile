@@ -4,6 +4,7 @@ APP?=./build/repoctl
 PROJECT?=github.com/seagullbird/headr-repoctl
 COMMIT?=$(shell git rev-parse --short HEAD)
 PORT?=8687
+Repository?=seagullbird/repoctl
 
 
 clean:
@@ -19,6 +20,7 @@ container: build
 
 minikube: container
 	cat k8s/k8s.yaml | \
+		gsed -E "s/\{\{(\s*)\.Repository(\s*)\}\}/$(Repository)/g" | \
 		gsed -E "s/\{\{(\s*)\.Commit(\s*)\}\}/$(COMMIT)/g" | \
 		gsed -E "s/\{\{(\s*)\.Port(\s*)\}\}/$(PORT)/g" > tmp.yaml
 	kubectl apply -f tmp.yaml
