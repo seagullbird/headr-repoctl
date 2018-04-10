@@ -37,7 +37,7 @@ build:
         code: make build
     - internal/docker-scratch-push:
         working-dir: ${WERCKER_ROOT}/build
-        endtrypoint: repoctl
+        cmd: ./repoctl
         tag: $WERCKER_GIT_COMMIT
         repository: $GCR_TAG
         registry: $GCR_HOST/v2
