@@ -48,7 +48,7 @@ push-image:
       code: |
         mv k8s-deploy.yaml.template $WERCKER_OUTPUT_DIR
         ls -alh $WERCKER_ROOT
-    - internal/docker-scratch-push:
+    - internal/docker-push:
         cmd: ./repoctl
         tag: $WERCKER_GIT_COMMIT
         repository: $GCR_TAG
