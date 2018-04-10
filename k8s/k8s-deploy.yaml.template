@@ -36,4 +36,4 @@ spec:
   ports:
   - protocol: TCP
     port: 2018
-    targetPort: 8687
+    targetPort: ${PORT}

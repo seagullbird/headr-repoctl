@@ -36,9 +36,15 @@ build:
     - script:
         name: "go build"
         code: |
-          make build
-    - internal/docker-push:
-        entrypoint: build/repoctl
+          go build -ldflags "-s -w -X github.com/seagullbird/headr-repoctl/config.PORT=:${PORT}" -o repoctl
+    - script:
+        name: "Copy Binary"
+        code: cp repoctl $WERCKER_OUTPUT_DIR
+
+push-image:
+  steps:
+    - internal/docker-scratch-push:
+        cmd: ./repoctl
         tag: $WERCKER_GIT_COMMIT
         repository: $GCR_TAG
         registry: $GCR_HOST/v2
