@@ -46,15 +46,12 @@ build:
 
 deploy-to-kubernetes:
   steps:
+    - bash-template
     - script:
         name: "Prepare Kubernetes files"
         code: |
-          cat k8s/k8s.yaml | \
-          sed -E "s/\{\{(\s*)\.Repository(\s*)\}\}/$(DOCKERHUB_REPO)/g" | \
-          sed -E "s/\{\{(\s*)\.Commit(\s*)\}\}/$(COMMIT)/g" | \
-          sed -E "s/\{\{(\s*)\.Port(\s*)\}\}/8687/g" > tmp.yaml
           mkdir $WERCKER_OUTPUT_DIR/kubernetes
-          mv tmp.yml $WERCKER_OUTPUT_DIR/kubernetes
+          mv k8s/k8s-deploy.yaml $WERCKER_OUTPUT_DIR/kubernetes
     - kubectl:
         name: "Deploy to Kubernetes"
         server: $KUBERNETES_MASTER
