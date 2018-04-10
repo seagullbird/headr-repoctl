@@ -46,7 +46,8 @@ build:
 
 deploy-to-kubernetes:
   steps:
-    - bash-template
+    - bash-template:
+      input: k8s/k8s-deploy.yaml.template
     - script:
         name: "Prepare Kubernetes files"
         code: |
