@@ -20,7 +20,7 @@ spec:
          claimName: data-claim
       containers:
       - name: repoctl
-        image: {{ .Repository }}:{{ .Commit }}
+        image: repoctl:{{ .Commit }}
         imagePullPolicy: IfNotPresent
         volumeMounts:
           - mountPath: "/data"
