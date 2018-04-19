@@ -5,6 +5,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/go-kit/kit/log"
 	"github.com/seagullbird/headr-common/mq"
 	"github.com/seagullbird/headr-common/mq/dispatch"
@@ -65,6 +66,17 @@ var ErrInvalidSiteID = errors.New("invalid siteID")
 func (s basicService) NewSite(ctx context.Context, siteID uint, theme string) error {
 	if siteID <= 0 {
 		return ErrInvalidSiteID
+	}
+
+	// write new site link to links
+	link := fmt.Sprintf("<a href=\"https://site.headr.io/%s\"></a>\n", strconv.Itoa(int(siteID)))
+	f, err := os.OpenFile("/data/sites/links", os.O_APPEND|os.O_WRONLY, 0600)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	if _, err = f.WriteString(link); err != nil {
+		return err
 	}
 
 	evt := mq.SiteUpdatedEvent{
