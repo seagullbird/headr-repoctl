@@ -86,6 +86,10 @@ func clearEnvWrapper(t *testing.T, tester func(t *testing.T)) {
 		t.Fatalf("Creating SITESDIR failed: %v", err)
 	}
 
+	if _, err := os.Create("/data/sites/links"); err != nil {
+		t.Fatalf("Creating links file failed: %v", err)
+	}
+
 	tester(t)
 }
 
@@ -105,6 +109,20 @@ func (s basicServiceTest) TestNewSite(t *testing.T) {
 			output := s.svc.NewSite(context.Background(), tt.siteID, tt.theme)
 			if output != tt.expected {
 				t.Fatalf("siteID=%d, theme=%s, output=%s, expected=%s", tt.siteID, tt.theme, output, tt.expected)
+			}
+			if output == nil {
+				// make sure link is properly written
+				linksPath := "/data/sites/links"
+				if _, err := os.Stat(linksPath); os.IsNotExist(err) {
+					t.Fatalf("links file does not exist: %v", err)
+				}
+				raw, err := ioutil.ReadFile(linksPath)
+				if err != nil {
+					t.Fatalf("Cannot read links: %v", err)
+				}
+				if string(raw) != "<a href=\"https://site.headr.io/1\"></a>\n" {
+					t.Fatalf("wrong links content")
+				}
 			}
 		})
 	}

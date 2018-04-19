@@ -70,7 +70,7 @@ func (s basicService) NewSite(ctx context.Context, siteID uint, theme string) er
 
 	// write new site link to links
 	link := fmt.Sprintf("<a href=\"https://site.headr.io/%s\"></a>\n", strconv.Itoa(int(siteID)))
-	f, err := os.OpenFile("/data/sites/links", os.O_APPEND|os.O_WRONLY, 0600)
+	f, err := os.OpenFile("/data/sites/links", os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
 		return err
 	}
